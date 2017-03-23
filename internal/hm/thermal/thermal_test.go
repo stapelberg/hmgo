@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stapelberg/homematic/internal/bidcos"
-	"github.com/stapelberg/homematic/internal/hm"
-	"github.com/stapelberg/homematic/internal/hm/thermal"
+	"github.com/stapelberg/hmgo/internal/bidcos"
+	"github.com/stapelberg/hmgo/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm/thermal"
 )
 
 type testGateway struct {

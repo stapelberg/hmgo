@@ -6,7 +6,7 @@ import (
 	"html/template"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/stapelberg/homematic/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm"
 )
 
 var (

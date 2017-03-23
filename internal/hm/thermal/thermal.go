@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stapelberg/homematic/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm"
 )
 
 const prometheusNamespace = "hmthermal"

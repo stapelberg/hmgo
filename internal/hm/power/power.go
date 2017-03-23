@@ -3,8 +3,8 @@ package power
 import (
 	"sync"
 
-	"github.com/stapelberg/homematic/internal/bidcos"
-	"github.com/stapelberg/homematic/internal/hm"
+	"github.com/stapelberg/hmgo/internal/bidcos"
+	"github.com/stapelberg/hmgo/internal/hm"
 )
 
 const (

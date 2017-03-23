@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/stapelberg/homematic/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm"
 )
 
 const statusTmplContents = `

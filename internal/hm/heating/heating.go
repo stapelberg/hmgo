@@ -3,7 +3,7 @@ package heating
 import (
 	"sync"
 
-	"github.com/stapelberg/homematic/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm"
 )
 
 // channels

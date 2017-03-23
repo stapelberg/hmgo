@@ -7,7 +7,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/stapelberg/homematic/internal/bidcos"
+	"github.com/stapelberg/hmgo/internal/bidcos"
 )
 
 const (

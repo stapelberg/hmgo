@@ -14,14 +14,14 @@ import (
 
 	"github.com/gokrazy/gokrazy"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/stapelberg/homematic/internal/bidcos"
-	"github.com/stapelberg/homematic/internal/gpio"
-	"github.com/stapelberg/homematic/internal/hm"
-	"github.com/stapelberg/homematic/internal/hm/heating"
-	"github.com/stapelberg/homematic/internal/hm/power"
-	"github.com/stapelberg/homematic/internal/hm/thermal"
-	"github.com/stapelberg/homematic/internal/serial"
-	"github.com/stapelberg/homematic/internal/uartgw"
+	"github.com/stapelberg/hmgo/internal/bidcos"
+	"github.com/stapelberg/hmgo/internal/gpio"
+	"github.com/stapelberg/hmgo/internal/hm"
+	"github.com/stapelberg/hmgo/internal/hm/heating"
+	"github.com/stapelberg/hmgo/internal/hm/power"
+	"github.com/stapelberg/hmgo/internal/hm/thermal"
+	"github.com/stapelberg/hmgo/internal/serial"
+	"github.com/stapelberg/hmgo/internal/uartgw"
 )
 
 // prometheus metrics
