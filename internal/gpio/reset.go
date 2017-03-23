@@ -2,50 +2,73 @@
 package gpio
 
 import (
-	"io/ioutil"
-	"log"
 	"os"
 	"syscall"
 	"time"
+	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
 
-// Configure configures pin as an output GPIO pin.
-func Configure(pin string) error {
-	if err := ioutil.WriteFile("/sys/class/gpio/export", []byte(pin), 0644); err != nil {
-		if pe, ok := err.(*os.PathError); ok && pe.Err == syscall.EBUSY {
-			// GPIO exports have already been configured, either we
-			// ran already or the user knows what they are doing.
-			// Fall-through to set the input/output status nevertheless:
-		} else {
-			return err
-		}
-	}
-	if err := ioutil.WriteFile("/sys/class/gpio/gpio"+pin+"/direction", []byte("out"), 0644); err != nil {
-		return err
-	}
-	return nil
+const (
+	GPIOHANDLE_REQUEST_OUTPUT        = 0x2
+	GPIO_GET_LINEHANDLE_IOCTL        = 0xc16cb403
+	GPIOHANDLE_SET_LINE_VALUES_IOCTL = 0xc040b409
+)
+
+type gpiohandlerequest struct {
+	Lineoffsets   [64]uint32
+	Flags         uint32
+	DefaultValues [64]uint8
+	ConsumerLabel [32]byte
+	Lines         uint32
+	Fd            uintptr
+}
+
+type gpiohandledata struct {
+	Values [64]uint8
 }
 
 // ResetUARTGW resets the UARTGW whose reset pin is connected to pin
 // by holding the pin low for 150ms, flushing the pending UART data,
 // then setting the pin high again.
-func ResetUARTGW(pin string, uartfd uintptr) error {
-	// Turn off device
-	if err := ioutil.WriteFile("/sys/class/gpio/gpio"+pin+"/value", []byte("0"), 0644); err != nil {
+func ResetUARTGW(uartfd uintptr) error {
+	f, err := os.Open("/dev/gpiochip0")
+	if err != nil {
 		return err
+	}
+	defer f.Close()
+
+	handlereq := gpiohandlerequest{
+		Lineoffsets:   [64]uint32{18},
+		Flags:         GPIOHANDLE_REQUEST_OUTPUT,
+		DefaultValues: [64]uint8{1},
+		ConsumerLabel: [32]byte{'h', 'm', 'g', 'o'},
+		Lines:         1,
+	}
+	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(f.Fd()), GPIO_GET_LINEHANDLE_IOCTL, uintptr(unsafe.Pointer(&handlereq))); errno != 0 {
+		return errno
+	}
+
+	// Turn off device
+	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(handlereq.Fd), GPIOHANDLE_SET_LINE_VALUES_IOCTL, uintptr(unsafe.Pointer(&gpiohandledata{
+		Values: [64]uint8{0},
+	}))); errno != 0 {
+		return errno
 	}
 	time.Sleep(150 * time.Millisecond)
 
 	// Flush all data in the input buffer
 	if _, _, err := syscall.Syscall(syscall.SYS_IOCTL, uartfd, unix.TCFLSH, uintptr(syscall.TCIFLUSH)); err != 0 {
-		log.Fatal(err)
+		return err
 	}
 
 	// Turn on device
-	if err := ioutil.WriteFile("/sys/class/gpio/gpio"+pin+"/value", []byte("1"), 0644); err != nil {
-		return err
+	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(handlereq.Fd), GPIOHANDLE_SET_LINE_VALUES_IOCTL, uintptr(unsafe.Pointer(&gpiohandledata{
+		Values: [64]uint8{1},
+	}))); errno != 0 {
+		return errno
 	}
+
 	return nil
 }

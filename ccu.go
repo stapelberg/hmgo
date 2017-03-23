@@ -54,11 +54,6 @@ var (
 		"/dev/ttyAMA0",
 		"path to a serial port to communicate with the HM-MOD-RPI-PCB")
 
-	// TODO: use an ioctl to get the correct pin, the numbering might even change between boots.
-	gpioPin = flag.String("gpio_pin",
-		"476",
-		"GPIO pin which is connected to the HM-MOD-RPI-PCB reset line")
-
 	listenAddress = flag.String("listen",
 		":8013",
 		"host:port to listen on")
@@ -81,14 +76,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("resetting HM-MOD-RPI-PCB via GPIO %s", *gpioPin)
+	log.Printf("resetting HM-MOD-RPI-PCB via GPIO")
 
 	// Reset the HM-MOD-RPI-PCB to ensure we are starting in a
 	// known-good state.
-	if err := gpio.Configure(*gpioPin); err != nil {
-		log.Fatal(err)
-	}
-	if err := gpio.ResetUARTGW(*gpioPin, uintptr(uart.Fd())); err != nil {
+	if err := gpio.ResetUARTGW(uintptr(uart.Fd())); err != nil {
 		log.Fatal(err)
 	}
 
