@@ -284,9 +284,7 @@ func (sd *StandardDevice) EnsureConfigured(channel, paramlist byte, cb func([]by
 
 var endOfPeerList = []byte{0x00, 0x00, 0x00, 0x00}
 
-// TODO(later): once golang.org/issue/19137 is fixed in a go1.8 point
-// release, remove star in front of FullyQualifiedChannel
-func (sd *StandardDevice) EnsurePeeredWith(channel byte, dest *FullyQualifiedChannel) error {
+func (sd *StandardDevice) EnsurePeeredWith(channel byte, dest FullyQualifiedChannel) error {
 	if err := sd.ConfigPeerListReq(channel); err != nil {
 		return err
 	}

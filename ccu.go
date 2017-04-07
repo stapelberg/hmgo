@@ -272,7 +272,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermalWohnzimmer, thermostatWohnzimmer)
 	if err := thermalWohnzimmer.EnsurePeeredWith(
 		thermal.ThermalControlTransmit,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermostatWohnzimmer.Addr,
 			Channel: heating.ClimateControlReceiver,
 		}); err != nil {
@@ -281,7 +281,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermostatWohnzimmer, thermalWohnzimmer)
 	if err := thermostatWohnzimmer.EnsurePeeredWith(
 		heating.ClimateControlReceiver,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermalWohnzimmer.Addr,
 			Channel: thermal.ThermalControlTransmit,
 		}); err != nil {
@@ -291,7 +291,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermalBad, thermostatBad)
 	if err := thermalBad.EnsurePeeredWith(
 		thermal.ThermalControlTransmit,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermostatBad.Addr,
 			Channel: heating.ClimateControlReceiver,
 		}); err != nil {
@@ -300,7 +300,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermostatBad, thermalBad)
 	if err := thermostatBad.EnsurePeeredWith(
 		heating.ClimateControlReceiver,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermalBad.Addr,
 			Channel: thermal.ThermalControlTransmit,
 		}); err != nil {
@@ -310,7 +310,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermalSchlafzimmer, thermostatSchlafzimmer)
 	if err := thermalSchlafzimmer.EnsurePeeredWith(
 		thermal.ThermalControlTransmit,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermostatSchlafzimmer.Addr,
 			Channel: heating.ClimateControlReceiver,
 		}); err != nil {
@@ -319,7 +319,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermostatSchlafzimmer, thermalSchlafzimmer)
 	if err := thermostatSchlafzimmer.EnsurePeeredWith(
 		heating.ClimateControlReceiver,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermalSchlafzimmer.Addr,
 			Channel: thermal.ThermalControlTransmit,
 		}); err != nil {
@@ -329,7 +329,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermalLea, thermostatLea)
 	if err := thermalLea.EnsurePeeredWith(
 		thermal.ThermalControlTransmit,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermostatLea.Addr,
 			Channel: heating.ClimateControlReceiver,
 		}); err != nil {
@@ -338,7 +338,7 @@ func main() {
 	log.Printf("ensuring %v is peered with %v", thermostatLea, thermalLea)
 	if err := thermostatLea.EnsurePeeredWith(
 		heating.ClimateControlReceiver,
-		&hm.FullyQualifiedChannel{
+		hm.FullyQualifiedChannel{
 			Peer:    thermalLea.Addr,
 			Channel: thermal.ThermalControlTransmit,
 		}); err != nil {
