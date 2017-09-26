@@ -120,7 +120,7 @@ func main() {
 		}
 	}
 
-	projectorSwitch := power.NewPowerSwitch(device([3]byte{0x40, 0xc2, 0xa8}, "videoProjector"))
+	avr := power.NewPowerSwitch(device([3]byte{0x40, 0xc2, 0xa8}, "avr"))
 
 	thermalBad := thermal.NewThermalControl(device([3]byte{0x39, 0x0f, 0x17}, "Bad"))
 	thermalWohnzimmer := thermal.NewThermalControl(device([3]byte{0x39, 0x06, 0xeb}, "Wohnzimmer"))
@@ -142,7 +142,7 @@ func main() {
 	bySerial["MEQ0059220"] = thermostatSchlafzimmer
 	bySerial["MEQ0059216"] = thermostatLea
 
-	bySerial["MEQ1341845"] = projectorSwitch
+	bySerial["MEQ1341845"] = avr
 
 	byAddr[thermalBad.Addr] = thermalBad
 	byAddr[thermalWohnzimmer.Addr] = thermalWohnzimmer
@@ -154,7 +154,7 @@ func main() {
 	byAddr[thermostatSchlafzimmer.Addr] = thermostatSchlafzimmer
 	byAddr[thermostatLea.Addr] = thermostatLea
 
-	byAddr[projectorSwitch.Addr] = projectorSwitch
+	byAddr[avr.Addr] = avr
 
 	// Explicitly reset the prometheus metric for last contact so that
 	// all devices have an entry.
@@ -345,6 +345,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Printf("power-cycling AVR")
+	if err := avr.LevelSet(power.ChannelSwitch, power.Off, 0x00); err != nil {
+		log.Fatal(err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	if err := avr.LevelSet(power.ChannelSwitch, power.On, 0x00); err != nil {
+		log.Fatal(err)
+	}
+
 	log.Printf("entering BidCoS packet handling main loop")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { handleStatus(w, r, bySerial) })
@@ -490,16 +501,5 @@ func main() {
 			}
 			log.Printf("config end")
 		}
-	}
-
-	// Unreached, left here to ensure it compiles:
-	if err := projectorSwitch.LevelSet(power.ChannelSwitch, power.Off, 0x00); err != nil {
-		log.Fatal(err)
-	}
-
-	time.Sleep(1 * time.Second)
-
-	if err := projectorSwitch.LevelSet(power.ChannelSwitch, power.On, 0x00); err != nil {
-		log.Fatal(err)
 	}
 }
