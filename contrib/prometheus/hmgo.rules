@@ -1,0 +1,21 @@
+ALERT BidCoSDeviceUnreachable
+  IF (time() - hm_LastContact{address=~"390f17|3906eb|3906da|390f27"}) > (60 * 60)
+  FOR 15m
+  LABELS {
+    job = "hmgo",
+  }
+  ANNOTATIONS {
+    summary = "BidCoS device unreachable",
+    description = "Did the battery run out?",
+  }
+
+ALERT BidCoSBatteryLow
+  IF hmthermal_InfoEventBatteryState < 2.5
+  FOR 4h
+  LABELS {
+    job = "hmgo",
+  }
+  ANNOTATIONS {
+    summary = "BidCoS battery low (< 2.5V)",
+    description = "Did the battery run out?",
+  }
