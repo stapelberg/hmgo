@@ -59,6 +59,25 @@ var (
 		"host:port to listen on")
 )
 
+var yearday = time.Now().YearDay()
+
+func overrideWinter(program []thermal.Program) []thermal.Program {
+	if yearday > 90 && yearday < 270 {
+		return program // no change during summer
+	}
+	log.Printf("initial program: %+v", program)
+	for i, prog := range program {
+		for ii, entry := range prog.Endtimes {
+			if entry.Endtime == uint64((17 * time.Hour).Minutes()) {
+				prog.Endtimes[ii].Temperature = 25.0 // cannot be reached, i.e. heat permanently
+			}
+		}
+		program[i] = prog
+	}
+	log.Printf("modified program: %+v", program)
+	return program
+}
+
 func main() {
 	flag.Parse()
 
@@ -171,7 +190,7 @@ func main() {
 
 	log.Printf("reading program configuration of %v", thermalWohnzimmer)
 	if err := thermalWohnzimmer.EnsureConfigured(0 /* channel */, 7 /* plist */, func(mem []byte) error {
-		thermalWohnzimmer.SetPrograms(mem, []thermal.Program{
+		thermalWohnzimmer.SetPrograms(mem, overrideWinter([]thermal.Program{
 			{
 				DayMask: thermal.WeekdayMask,
 				Endtimes: [13]thermal.ProgramEntry{
@@ -188,7 +207,7 @@ func main() {
 					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 22.0},
 				},
 			},
-		})
+		}))
 		return nil
 	}); err != nil {
 		log.Fatal(err)
@@ -196,7 +215,7 @@ func main() {
 
 	log.Printf("reading program configuration of %v", thermalBad)
 	if err := thermalBad.EnsureConfigured(0 /* channel */, 7 /* plist */, func(mem []byte) error {
-		thermalBad.SetPrograms(mem, []thermal.Program{
+		thermalBad.SetPrograms(mem, overrideWinter([]thermal.Program{
 			{
 				DayMask: thermal.WeekdayMask,
 				Endtimes: [13]thermal.ProgramEntry{
@@ -213,7 +232,7 @@ func main() {
 					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 22.0},
 				},
 			},
-		})
+		}))
 		return nil
 	}); err != nil {
 		log.Fatal(err)
@@ -221,7 +240,7 @@ func main() {
 
 	log.Printf("reading program configuration of %v", thermalSchlafzimmer)
 	if err := thermalSchlafzimmer.EnsureConfigured(0 /* channel */, 7 /* plist */, func(mem []byte) error {
-		thermalSchlafzimmer.SetPrograms(mem, []thermal.Program{
+		thermalSchlafzimmer.SetPrograms(mem, overrideWinter([]thermal.Program{
 			{
 				DayMask: thermal.WeekdayMask,
 				Endtimes: [13]thermal.ProgramEntry{
@@ -238,7 +257,7 @@ func main() {
 					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 24.0},
 				},
 			},
-		})
+		}))
 		return nil
 	}); err != nil {
 		log.Fatal(err)
@@ -246,7 +265,7 @@ func main() {
 
 	log.Printf("reading program configuration of %v", thermalLea)
 	if err := thermalLea.EnsureConfigured(0 /* channel */, 7 /* plist */, func(mem []byte) error {
-		thermalLea.SetPrograms(mem, []thermal.Program{
+		thermalLea.SetPrograms(mem, overrideWinter([]thermal.Program{
 			{
 				DayMask: thermal.WeekdayMask,
 				Endtimes: [13]thermal.ProgramEntry{
@@ -263,7 +282,7 @@ func main() {
 					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 22.0},
 				},
 			},
-		})
+		}))
 		return nil
 	}); err != nil {
 		log.Fatal(err)
