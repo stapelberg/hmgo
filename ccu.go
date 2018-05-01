@@ -59,9 +59,8 @@ var (
 		"host:port to listen on")
 )
 
-var yearday = time.Now().YearDay()
-
 func overrideWinter(program []thermal.Program) []thermal.Program {
+	yearday := time.Now().YearDay()
 	if yearday > 90 && yearday < 270 {
 		return program // no change during summer
 	}
