@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/binary"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"sync"
 	"syscall"
 	"time"
 
@@ -363,16 +365,31 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("power-cycling AVR")
-	if err := avr.LevelSet(power.ChannelSwitch, power.Off, 0x00); err != nil {
-		log.Fatal(err)
-	}
+	var readMu sync.Mutex
 
-	time.Sleep(1 * time.Second)
-
-	if err := avr.LevelSet(power.ChannelSwitch, power.On, 0x00); err != nil {
-		log.Fatal(err)
-	}
+	// Expose power on/off control on localhost
+	localMux := http.NewServeMux()
+	localMux.HandleFunc("/power/off", func(w http.ResponseWriter, r *http.Request) {
+		readMu.Lock()
+		defer readMu.Unlock()
+		if err := avr.LevelSet(power.ChannelSwitch, power.Off, 0x00); err != nil {
+			log.Printf("avr.LevelSet(power.Off): %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "OK")
+	})
+	localMux.HandleFunc("/power/on", func(w http.ResponseWriter, r *http.Request) {
+		readMu.Lock()
+		defer readMu.Unlock()
+		if err := avr.LevelSet(power.ChannelSwitch, power.On, 0x00); err != nil {
+			log.Printf("avr.LevelSet(power.On): %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "OK")
+	})
+	go http.ListenAndServe("localhost:8012", localMux)
 
 	log.Printf("entering BidCoS packet handling main loop")
 
@@ -390,7 +407,9 @@ func main() {
 		default:
 		}
 
+		readMu.Lock()
 		pkt, err := gw.ReadPacket()
+		readMu.Unlock()
 		if err != nil {
 			log.Fatal(err)
 		}
