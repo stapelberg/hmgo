@@ -16,6 +16,7 @@ import (
 
 	"github.com/gokrazy/gokrazy"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/stapelberg/hmgo/internal/bidcos"
 	"github.com/stapelberg/hmgo/internal/gpio"
 	"github.com/stapelberg/hmgo/internal/hm"
@@ -394,7 +395,7 @@ func main() {
 	log.Printf("entering BidCoS packet handling main loop")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { handleStatus(w, r, bySerial) })
-	http.Handle("/metrics", prometheus.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 	go http.ListenAndServe(*listenAddress, nil)
 
 	t := time.Tick(1 * time.Hour)
