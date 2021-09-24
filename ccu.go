@@ -148,7 +148,7 @@ func main() {
 	thermalSchlafzimmer := thermal.NewThermalControl(device([3]byte{0x39, 0x06, 0xda}, "Schlafzimmer"))
 	thermalLea := thermal.NewThermalControl(device([3]byte{0x39, 0x0f, 0x27}, "Lea"))
 
-	thermostatBad := heating.NewThermostat(device([3]byte{0x38, 0xe6, 0xe9}, "Bad"))
+	thermostatBad := heating.NewThermostat(device([3]byte{0x73, 0xf7, 0xee}, "Bad"))
 	thermostatWohnzimmer := heating.NewThermostat(device([3]byte{0x38, 0xf5, 0x9c}, "Wohnzimmer"))
 	thermostatSchlafzimmer := heating.NewThermostat(device([3]byte{0x38, 0xe8, 0xe3}, "Schlafzimmer"))
 	thermostatLea := heating.NewThermostat(device([3]byte{0x38, 0xe8, 0xef}, "Lea"))
@@ -159,7 +159,7 @@ func main() {
 	bySerial["MEQ0090675"] = thermalLea
 
 	bySerial["MEQ0059922"] = thermostatWohnzimmer
-	bySerial["MEQ0058671"] = thermostatBad
+	bySerial["REQ1905196"] = thermostatBad
 	bySerial["MEQ0059220"] = thermostatSchlafzimmer
 	bySerial["MEQ0059216"] = thermostatLea
 
