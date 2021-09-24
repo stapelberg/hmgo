@@ -21,6 +21,7 @@ const (
 	PowerEventCyclic = 0x5e
 	PowerEvent       = 0x5f
 	WeatherEvent     = 0x70
+	Timestamp        = 0x3f
 )
 
 // BidCoS Config subcommands

@@ -434,7 +434,10 @@ func main() {
 
 		switch bpkt.Cmd {
 		default:
-			log.Printf("unhandled BidCoS command from %x: %v", bpkt.Source, bpkt.Cmd)
+			log.Printf("unhandled BidCoS command from %x: %x", bpkt.Source, bpkt.Cmd)
+
+		case bidcos.Timestamp:
+			log.Printf("TODO: device %x requested timestamp", bpkt.Source)
 
 		case bidcos.WeatherEvent:
 			switch d := dev.(type) {
