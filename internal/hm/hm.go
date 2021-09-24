@@ -183,6 +183,22 @@ func (sd *StandardDevice) ConfigPeerAdd(channel byte, peerAddr [3]byte, peerChan
 	})
 }
 
+func (sd *StandardDevice) ConfigPeerRemove(channel byte, peerAddr [3]byte, peerChannel byte) error {
+	return sd.BCS.WritePacket(&bidcos.Packet{
+		Msgcnt: sd.count(),
+		Flags:  bidcos.DefaultFlags | bidcos.Burst,
+		Cmd:    bidcos.Config,
+		Dest:   sd.Addr,
+		Payload: []byte{
+			channel, // channel
+			bidcos.ConfigPeerRemove,
+			peerAddr[0], peerAddr[1], peerAddr[2],
+			peerChannel, // peer channel a
+			0x00,        // peer channel b
+		},
+	})
+}
+
 // LoadConfig is a convenience function to load the device parameters
 // in paramlist of channel into mem.
 func (sd *StandardDevice) LoadConfig(mem []byte, channel, paramlist byte) error {
@@ -297,6 +313,12 @@ ReadPeers:
 		if err != nil {
 			return err
 		}
+
+		if !bytes.Equal(pkt.Source[:], sd.Addr[:]) {
+			log.Printf("dropping BidCoS packet from different device: %+v", pkt)
+			continue
+		}
+
 		if pkt.Payload[0] != 0x01 /* INFO_PEER_LIST */ {
 			return fmt.Errorf("unexpected payload: %x", pkt.Payload[0])
 		}
@@ -314,23 +336,40 @@ ReadPeers:
 		}
 	}
 
-	log.Printf("peers: %+v", peers)
+	log.Printf("%v has existing peers %+v", sd, peers)
 	if len(peers) > 1 {
 		// TODO(later): unpeer everything
 		return fmt.Errorf("unpeering not yet implemented")
 	}
 	if len(peers) == 1 {
-		if bytes.Equal(peers[0].Peer[:], dest.Peer[:]) {
+		existing := peers[0]
+		if bytes.Equal(existing.Peer[:], dest.Peer[:]) {
 			return nil
 		}
-		// TODO(later): unpeer:
-		// -->    02 02 39 06 eb 02  00
-		//        ch pr peeraddr cha chb
-		//           pr = CONFIG_PEER_REMOVE
-		// <--    00 ack
-		return fmt.Errorf("unpeering not yet implemented")
+
+		log.Printf("removing existing peer %v", existing)
+		if err := sd.ConfigPeerRemove(channel, existing.Peer, existing.Channel); err != nil {
+			return err
+		}
+
+		pkt, err := sd.BCS.ReadPacket()
+		if err != nil {
+			return err
+		}
+		if got, want := pkt.Cmd, byte(0x10); got != want {
+			return fmt.Errorf("unexpected response command: got %x, want %x", got, want)
+		}
+		if got, want := len(pkt.Payload), 1; got < want {
+			return fmt.Errorf("unexpected response payload length: got %d, want >= %d", got, want)
+		}
+		if got, want := pkt.Payload[0], byte(0x00); got != want {
+			return fmt.Errorf("unexpected acknowledgement status: got %x, want %x", got, want)
+		}
+
+		// fallthrough to add the peer
 	}
 
+	log.Printf("adding peer %v", dest)
 	if err := sd.ConfigPeerAdd(channel, dest.Peer, dest.Channel); err != nil {
 		return err
 	}
