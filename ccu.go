@@ -35,7 +35,7 @@ var (
 			Name:      "LastContact",
 			Help:      "Last device contact as UNIX timestamps, i.e. seconds since the epoch",
 		},
-		[]string{"address", "name"})
+		[]string{"address", "name", "hmtype"})
 
 	packetsDecoded = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -180,7 +180,7 @@ func main() {
 	// Explicitly reset the prometheus metric for last contact so that
 	// all devices have an entry.
 	for _, dev := range byAddr {
-		lastContact.With(prometheus.Labels{"name": dev.Name(), "address": dev.AddrHex()}).Set(0)
+		lastContact.With(prometheus.Labels{"name": dev.Name(), "address": dev.AddrHex(), "hmtype": dev.HomeMaticType()}).Set(0)
 	}
 
 	for addr, dev := range byAddr {
@@ -430,7 +430,7 @@ func main() {
 			continue
 		}
 
-		lastContact.With(prometheus.Labels{"name": dev.Name(), "address": dev.AddrHex()}).Set(float64(time.Now().Unix()))
+		lastContact.With(prometheus.Labels{"name": dev.Name(), "address": dev.AddrHex(), "hmtype": dev.HomeMaticType()}).Set(float64(time.Now().Unix()))
 
 		switch bpkt.Cmd {
 		default:

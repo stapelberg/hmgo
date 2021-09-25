@@ -50,6 +50,8 @@ type ThermalControl struct {
 	latestMu                  sync.RWMutex
 }
 
+func (tc *ThermalControl) HomeMaticType() string { return "thermal" }
+
 func NewThermalControl(sd hm.StandardDevice) *ThermalControl {
 	sd.NumChannels = 7
 	return &ThermalControl{StandardDevice: sd}

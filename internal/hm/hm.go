@@ -27,6 +27,7 @@ type Device interface {
 	MostRecentEvents() []Event
 	AddrHex() string
 	Name() string
+	HomeMaticType() string
 }
 
 type Event interface {

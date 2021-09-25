@@ -42,7 +42,7 @@ var (
 			Name:      "InfoEventBatteryState",
 			Help:      "battery state in V",
 		},
-		[]string{"address", "name"})
+		[]string{"address", "name", "hmtype"})
 
 	infoEventValveState = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -177,7 +177,7 @@ func (t *Thermostat) DecodeInfoEvent(payload []byte) (*InfoEvent, error) {
 	infoEventFault.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex(), "fault": "lowbat"}).Set(boolToFloat64(ie.Fault == Lowbat))
 	infoEventFault.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex(), "fault": "valveerrorposition"}).Set(boolToFloat64(ie.Fault == ValveErrorPosition))
 
-	infoEventBatteryState.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex()}).Set(ie.BatteryState)
+	infoEventBatteryState.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex(), "hmtype": "heating"}).Set(ie.BatteryState)
 	infoEventValveState.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex()}).Set(float64(ie.ValveState))
 
 	infoEventControl.With(prometheus.Labels{"name": t.Name(), "address": t.AddrHex(), "mode": "manu"}).Set(boolToFloat64(ie.Control == ManuMode))

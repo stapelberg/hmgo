@@ -21,6 +21,8 @@ type Thermostat struct {
 	latestMu        sync.RWMutex
 }
 
+func (t *Thermostat) HomeMaticType() string { return "heating" }
+
 func NewThermostat(sd hm.StandardDevice) *Thermostat {
 	sd.NumChannels = 6
 	return &Thermostat{StandardDevice: sd}

@@ -33,6 +33,8 @@ type PowerSwitch struct {
 	latestMu         sync.RWMutex
 }
 
+func (ps *PowerSwitch) HomeMaticType() string { return "power" }
+
 func NewPowerSwitch(sd hm.StandardDevice) *PowerSwitch {
 	sd.NumChannels = 6
 	return &PowerSwitch{StandardDevice: sd}

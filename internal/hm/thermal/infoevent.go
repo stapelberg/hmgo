@@ -56,7 +56,7 @@ var (
 			Name:      "InfoEventBatteryState",
 			Help:      "battery state in V",
 		},
-		[]string{"address", "name"})
+		[]string{"address", "name", "hmtype"})
 
 	infoEventControl = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -163,7 +163,7 @@ func (tc *ThermalControl) DecodeInfoEvent(payload []byte) (*InfoEvent, error) {
 	infoEventLowbatReporting.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(boolToFloat64(ie.LowbatReporting))
 	infoEventCommunicationReporting.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(boolToFloat64(ie.CommunicationReporting))
 	infoEventWindowOpenReporting.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(boolToFloat64(ie.WindowOpenReporting))
-	infoEventBatteryState.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(ie.BatteryState)
+	infoEventBatteryState.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex(), "hmtype": "thermal"}).Set(ie.BatteryState)
 	infoEventControl.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(float64(ie.Control))
 	infoEventBoostState.With(prometheus.Labels{"name": tc.Name(), "address": tc.AddrHex()}).Set(float64(ie.BoostState))
 
