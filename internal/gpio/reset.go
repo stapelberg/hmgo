@@ -2,6 +2,7 @@
 package gpio
 
 import (
+	"fmt"
 	"os"
 	"syscall"
 	"time"
@@ -47,27 +48,27 @@ func ResetUARTGW(uartfd uintptr) error {
 		Lines:         1,
 	}
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(f.Fd()), GPIO_GET_LINEHANDLE_IOCTL, uintptr(unsafe.Pointer(&handlereq))); errno != 0 {
-		return errno
+		return fmt.Errorf("GPIO_GET_LINEHANDLE_IOCTL: %v", errno)
 	}
 
 	// Turn off device
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(handlereq.Fd), GPIOHANDLE_SET_LINE_VALUES_IOCTL, uintptr(unsafe.Pointer(&gpiohandledata{
 		Values: [64]uint8{0},
 	}))); errno != 0 {
-		return errno
+		return fmt.Errorf("GPIOHANDLE_SET_LINE_VALUES_IOCTL: %v", errno)
 	}
 	time.Sleep(150 * time.Millisecond)
 
 	// Flush all data in the input buffer
 	if _, _, err := syscall.Syscall(syscall.SYS_IOCTL, uartfd, unix.TCFLSH, uintptr(syscall.TCIFLUSH)); err != 0 {
-		return err
+		return fmt.Errorf("TCFLSH: %v", err)
 	}
 
 	// Turn on device
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(handlereq.Fd), GPIOHANDLE_SET_LINE_VALUES_IOCTL, uintptr(unsafe.Pointer(&gpiohandledata{
 		Values: [64]uint8{1},
 	}))); errno != 0 {
-		return errno
+		return fmt.Errorf("GPIOHANDLE_SET_LINE_VALUES_IOCTL: %v", errno)
 	}
 
 	return nil
