@@ -217,6 +217,13 @@ func main() {
 
 	log.Printf("reading program configuration of %v", thermalBad)
 	if err := thermalBad.EnsureConfigured(0 /* channel */, 7 /* plist */, func(mem []byte) error {
+
+		const valveOffsetOffset = 11
+		const valveMaxOffset = 12
+		log.Printf("valve offset: %d", mem[valveOffsetOffset])
+		mem[valveOffsetOffset] = 100 & hm.Mask7Bit
+		log.Printf("valve max: %d", mem[valveMaxOffset])
+
 		thermalBad.SetPrograms(mem, overrideWinter([]thermal.Program{
 			{
 				DayMask: thermal.WeekdayMask,
