@@ -54,7 +54,7 @@ func init() {
 // flags
 var (
 	serialPort = flag.String("serial_port",
-		"/dev/ttyAMA0",
+		"/dev/serial0",
 		"path to a serial port to communicate with the HM-MOD-RPI-PCB")
 
 	listenAddress = flag.String("listen",
