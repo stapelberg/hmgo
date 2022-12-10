@@ -256,14 +256,14 @@ func main() {
 					{ /* 00:00- */ uint64((6 * time.Hour).Minutes()), 17.0},
 					{ /* 06:00- */ uint64((10 * time.Hour).Minutes()), 22.0},
 					{ /* 10:00- */ uint64((17 * time.Hour).Minutes()), 17.0},
-					{ /* 17:00- */ uint64((23 * time.Hour).Minutes()), 24.0},
+					{ /* 17:00- */ uint64((23 * time.Hour).Minutes()), 22.0},
 				},
 			},
 			{
 				DayMask: thermal.WeekendMask,
 				Endtimes: [13]thermal.ProgramEntry{
 					{ /* 00:00- */ uint64((6 * time.Hour).Minutes()), 17.0},
-					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 24.0},
+					{ /* 06:00- */ uint64((23 * time.Hour).Minutes()), 22.0},
 				},
 			},
 		}))
