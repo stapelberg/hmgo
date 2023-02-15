@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/gokrazy/gokrazy v0.0.0-20210913174608-2ad6fef67f2e
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/sigurn/crc16 v0.0.0-20160107003519-da416fad5162
 	golang.org/x/sys v0.0.0-20210923061019-b8560ed6a9b7
 )
