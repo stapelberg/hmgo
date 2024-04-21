@@ -63,8 +63,11 @@ var (
 )
 
 func overrideWinter(program []thermal.Program) []thermal.Program {
-	yearday := time.Now().YearDay()
-	if yearday > 90 && yearday < 270 {
+	month := time.Now().Month()
+	if month == time.May ||
+		month == time.June ||
+		month == time.July ||
+		month == time.August {
 		return program // no change during summer
 	}
 	log.Printf("initial program: %+v", program)
