@@ -74,7 +74,7 @@ func overrideWinter(program []thermal.Program) []thermal.Program {
 	for i, prog := range program {
 		for ii, entry := range prog.Endtimes {
 			if entry.Endtime > uint64((6 * time.Hour).Minutes()) {
-				prog.Endtimes[ii].Temperature = 25.0 // cannot be reached, i.e. heat permanently
+				prog.Endtimes[ii].Temperature = 24.0 // cannot be reached, i.e. heat permanently
 			}
 		}
 		program[i] = prog
