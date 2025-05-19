@@ -1,6 +1,6 @@
 module github.com/stapelberg/hmgo
 
-go 1.17
+go 1.24
 
 require (
 	github.com/gokrazy/gokrazy v0.0.0-20210913174608-2ad6fef67f2e
