@@ -1,12 +1,13 @@
 module github.com/stapelberg/hmgo
 
-go 1.24
+go 1.24.0
 
 require (
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/gokrazy/gokrazy v0.0.0-20250417142646-cc835e3b7f24
 	github.com/prometheus/client_golang v1.22.0
 	github.com/sigurn/crc16 v0.0.0-20240131213347-83fcde1e29d1
-	golang.org/x/sys v0.33.0
+	golang.org/x/sys v0.36.0
 )
 
 require (
@@ -14,6 +15,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/gokrazy/internal v0.0.0-20240629150625-a0f1dee26ef5 // indirect
 	github.com/google/renameio/v2 v2.0.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/kenshaw/evdev v0.1.0 // indirect
 	github.com/mdlayher/watchdog v0.0.0-20201005150459-8bdc4f41966b // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
@@ -23,5 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/vishvananda/netlink v1.1.0 // indirect
 	github.com/vishvananda/netns v0.0.0-20211101163701-50045581ed74 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 )

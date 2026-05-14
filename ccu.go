@@ -60,6 +60,10 @@ var (
 	listenAddress = flag.String("listen",
 		":8013",
 		"host:port to listen on")
+
+	mqttBroker = flag.String("mqtt_broker",
+		"tcp://mqtt.lan:1883",
+		"MQTT broker URL; empty string disables MQTT publishing")
 )
 
 func overrideWinter(program []thermal.Program) []thermal.Program {
@@ -404,6 +408,8 @@ func main() {
 
 	log.Printf("entering BidCoS packet handling main loop")
 
+	mqttCh := MQTT()
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { handleStatus(w, r, bySerial) })
 	http.Handle("/metrics", promhttp.Handler())
 	go http.ListenAndServe(*listenAddress, nil)
@@ -453,10 +459,12 @@ func main() {
 			switch d := dev.(type) {
 			case *thermal.ThermalControl:
 				// Decode the event to update the prometheus metrics.
-				if _, err := d.DecodeWeatherEvent(bpkt.Payload); err != nil {
+				ev, err := d.DecodeWeatherEvent(bpkt.Payload)
+				if err != nil {
 					log.Printf("decoding weather event packet from %v: %v", bpkt.Source, err)
 					continue
 				}
+				publishMQTT(mqttCh, dev.HomeMaticType(), dev.Name(), "weather", ev)
 
 				packetsDecoded.With(prometheus.Labels{"type": "hmthermal_WeatherEvent"}).Inc()
 
@@ -468,10 +476,12 @@ func main() {
 			switch d := dev.(type) {
 			case *thermal.ThermalControl:
 				// Decode the event to update the prometheus metrics.
-				if _, err := d.DecodeThermalControlEvent(bpkt.Payload); err != nil {
+				ev, err := d.DecodeThermalControlEvent(bpkt.Payload)
+				if err != nil {
 					log.Printf("decoding thermal control event packet from %v: %v", bpkt.Source, err)
 					continue
 				}
+				publishMQTT(mqttCh, dev.HomeMaticType(), dev.Name(), "thermal-control", ev)
 
 				packetsDecoded.With(prometheus.Labels{"type": "hmthermal_ThermalControlEvent"}).Inc()
 
@@ -485,10 +495,12 @@ func main() {
 			switch d := dev.(type) {
 			case *power.PowerSwitch:
 				// Decode the event to update the prometheus metrics.
-				if _, err := d.DecodePowerEvent(bpkt.Payload); err != nil {
+				ev, err := d.DecodePowerEvent(bpkt.Payload)
+				if err != nil {
 					log.Printf("decoding power event packet from %v: %v", bpkt.Source, err)
 					continue
 				}
+				publishMQTT(mqttCh, dev.HomeMaticType(), dev.Name(), "power", ev)
 
 				packetsDecoded.With(prometheus.Labels{"type": "hmpower_PowerEvent"}).Inc()
 
@@ -499,18 +511,22 @@ func main() {
 		case bidcos.Info:
 			switch d := dev.(type) {
 			case *thermal.ThermalControl:
-				if _, err := d.DecodeInfoEvent(bpkt.Payload); err != nil {
+				ev, err := d.DecodeInfoEvent(bpkt.Payload)
+				if err != nil {
 					log.Printf("decoding power event packet from %v: %v", bpkt.Source, err)
 					continue
 				}
+				publishMQTT(mqttCh, dev.HomeMaticType(), dev.Name(), "info", ev)
 
 				packetsDecoded.With(prometheus.Labels{"type": "hmthermal_InfoEvent"}).Inc()
 
 			case *heating.Thermostat:
-				if _, err := d.DecodeInfoEvent(bpkt.Payload); err != nil {
+				ev, err := d.DecodeInfoEvent(bpkt.Payload)
+				if err != nil {
 					log.Printf("decoding power event packet from %v: %v", bpkt.Source, err)
 					continue
 				}
+				publishMQTT(mqttCh, dev.HomeMaticType(), dev.Name(), "info", ev)
 
 				packetsDecoded.With(prometheus.Labels{"type": "hmheating_InfoEvent"}).Inc()
 

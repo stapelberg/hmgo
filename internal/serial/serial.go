@@ -1,4 +1,5 @@
-//+build linux
+//go:build linux
+// +build linux
 
 // Package serial configures serial ports.
 package serial
